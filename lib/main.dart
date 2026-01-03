@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:skin_scan_ai/theme.dart';
+import 'package:skin_scan_ai/state/scan_provider.dart';
 import 'package:skin_scan_ai/features/splash/splash_screen.dart';
 import 'package:skin_scan_ai/features/auth/authentication_screen.dart';
 import 'package:skin_scan_ai/features/onboarding/onboarding_screen.dart';
@@ -19,11 +21,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Skin Scan AI',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      routerConfig: _router,
+    return ChangeNotifierProvider<ScanProvider>(
+      create: (context) => ScanProvider(),
+      child: MaterialApp.router(
+        title: 'Skin Scan AI',
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        routerConfig: _router,
+      ),
     );
   }
 }
