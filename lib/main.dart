@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skin_scan_ai/theme.dart';
+import 'package:skin_scan_ai/features/splash/splash_screen.dart';
 import 'package:skin_scan_ai/features/auth/authentication_screen.dart';
 import 'package:skin_scan_ai/features/onboarding/onboarding_screen.dart';
 import 'package:skin_scan_ai/features/quiz/skin_profile_screen.dart';
@@ -28,7 +29,12 @@ class MyApp extends StatelessWidget {
 }
 
 final GoRouter _router = GoRouter(
+  initialLocation: '/splash',
   routes: [
+    GoRoute(
+      path: '/splash',
+      builder: (context, state) => const SplashScreen(),
+    ),
     GoRoute(
       path: '/',
       builder: (context, state) => const OnboardingScreen(),
