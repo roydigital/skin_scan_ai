@@ -31,19 +31,19 @@ class _ResultsScreenState extends State<ResultsScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.black),
+                    icon: Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodyLarge?.color),
                     onPressed: () => context.pop(),
                   ),
-                  const Text(
+                  Text(
                     'Scan Results',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.share, color: Colors.black),
+                    icon: Icon(Icons.share, color: Theme.of(context).textTheme.bodyLarge?.color),
                     onPressed: () {
                       // TODO: Implement share functionality
                     },
@@ -120,18 +120,19 @@ class _ResultsScreenState extends State<ResultsScreen> {
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.9),
+                                    color: Theme.of(context).cardColor.withOpacity(0.9),
                                     borderRadius: BorderRadius.circular(20),
                                     border: Border.all(color: Colors.grey.shade300),
                                   ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      const Text(
+                                      Text(
                                         'Heatmap',
                                         style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w500,
+                                          color: Theme.of(context).textTheme.bodyLarge?.color,
                                         ),
                                       ),
                                       const SizedBox(width: 8),
@@ -172,10 +173,10 @@ class _ResultsScreenState extends State<ResultsScreen> {
                                     percent: (provider.analysisResults!['overallScore'] as int) / 100,
                                     center: Text(
                                       '${provider.analysisResults!['overallScore']}',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 32,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.black,
+                                        color: Theme.of(context).textTheme.bodyLarge?.color,
                                       ),
                                     ),
                                     progressColor: AppTheme.primaryGreen,
@@ -185,10 +186,10 @@ class _ResultsScreenState extends State<ResultsScreen> {
                                   const SizedBox(height: 16),
                                   Text(
                                     provider.analysisResults!['condition'] as String,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.black87,
+                                      color: Theme.of(context).textTheme.bodyLarge?.color,
                                     ),
                                   ),
                                 ],
@@ -205,12 +206,12 @@ class _ResultsScreenState extends State<ResultsScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 'Concern Breakdown',
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.black,
+                                  color: Theme.of(context).textTheme.bodyLarge?.color,
                                 ),
                               ),
                               const SizedBox(height: 16),
@@ -225,10 +226,10 @@ class _ResultsScreenState extends State<ResultsScreen> {
                                         children: [
                                           Text(
                                             concern['name'] as String,
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w500,
-                                              color: Colors.black87,
+                                              color: Theme.of(context).textTheme.bodyLarge?.color,
                                             ),
                                           ),
                                           Text(
@@ -266,20 +267,20 @@ class _ResultsScreenState extends State<ResultsScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
+                        Text(
                           'No results found',
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.w600,
-                            color: Colors.black,
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
                           ),
                         ),
                         const SizedBox(height: 16),
-                        const Text(
+                        Text(
                           'Please complete the quiz to get your skin analysis.',
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.black54,
+                            color: Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.7),
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -311,45 +312,49 @@ class _ResultsScreenState extends State<ResultsScreen> {
       ),
 
       // Sticky Footer
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: ElevatedButton(
-          onPressed: () => context.push('/routine'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.primaryGreen,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            elevation: 0,
-          ),
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Build My Routine',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
+      bottomNavigationBar: SafeArea(
+        bottom: true,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 8,
+                offset: const Offset(0, -2),
               ),
-              SizedBox(width: 8),
-              Icon(Icons.arrow_forward, size: 20),
             ],
+          ),
+          child: ElevatedButton(
+            onPressed: () => context.push('/routine'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryGreen,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 0,
+            ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Build My Routine',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(width: 8),
+                Icon(Icons.arrow_forward, size: 20),
+              ],
+            ),
           ),
         ),
       ),
     );
+
   }
 }

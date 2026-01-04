@@ -73,12 +73,12 @@ class SkinProfileScreen extends StatelessWidget {
                   RichText(
                     text: TextSpan(
                       children: [
-                        const TextSpan(
+                        TextSpan(
                           text: 'What is your primary ',
                           style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: Theme.of(context).textTheme.headlineMedium?.color,
                           ),
                         ),
                         TextSpan(
@@ -130,7 +130,7 @@ class SkinProfileScreen extends StatelessWidget {
                           border: Border.all(
                             color: isSelected
                                 ? AppTheme.primaryGreen
-                                : Colors.grey.shade300,
+                                : Theme.of(context).dividerColor,
                             width: 1,
                           ),
                         ),
@@ -144,7 +144,7 @@ class SkinProfileScreen extends StatelessWidget {
                                   size: 32,
                                   color: isSelected
                                       ? AppTheme.primaryGreen
-                                      : Colors.grey.shade600,
+                                      : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
@@ -155,7 +155,7 @@ class SkinProfileScreen extends StatelessWidget {
                                     fontWeight: FontWeight.w500,
                                     color: isSelected
                                         ? AppTheme.primaryGreen
-                                        : Colors.grey.shade600,
+                                        : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                                   ),
                                 ),
                               ],

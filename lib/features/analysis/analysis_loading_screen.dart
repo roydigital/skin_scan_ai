@@ -82,7 +82,6 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -229,7 +228,6 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black87,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -253,47 +251,53 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                   ),
                   const SizedBox(height: 24),
                   // Status Chips
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      _statusChips.length,
-                      (index) => AnimatedOpacity(
-                        opacity: index <= _currentChipIndex ? 1.0 : 0.3,
-                        duration: const Duration(milliseconds: 300),
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: index <= _currentChipIndex
-                                ? AppTheme.primaryGreen.withOpacity(0.1)
-                                : Colors.grey[200],
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: index <= _currentChipIndex
-                                  ? AppTheme.primaryGreen
-                                  : Colors.grey[400]!,
-                              width: 1,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(
+                          _statusChips.length,
+                          (index) => AnimatedOpacity(
+                            opacity: index <= _currentChipIndex ? 1.0 : 0.3,
+                            duration: const Duration(milliseconds: 300),
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 4),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: index <= _currentChipIndex
+                                    ? AppTheme.primaryGreen.withOpacity(0.1)
+                                    : Colors.grey[200],
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: index <= _currentChipIndex
+                                      ? AppTheme.primaryGreen
+                                      : Colors.grey[400]!,
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                _statusChips[index],
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: index <= _currentChipIndex
+                                      ? AppTheme.primaryGreen
+                                      : Colors.grey[600],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ).animate(
+                              effects: index <= _currentChipIndex
+                                  ? [
+                                      const ScaleEffect(
+                                        duration: Duration(milliseconds: 300),
+                                        curve: Curves.elasticOut,
+                                      ),
+                                    ]
+                                  : [],
                             ),
                           ),
-                          child: Text(
-                            _statusChips[index],
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: index <= _currentChipIndex
-                                  ? AppTheme.primaryGreen
-                                  : Colors.grey[600],
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ).animate(
-                          effects: index <= _currentChipIndex
-                              ? [
-                                  const ScaleEffect(
-                                    duration: Duration(milliseconds: 300),
-                                    curve: Curves.elasticOut,
-                                  ),
-                                ]
-                              : [],
                         ),
                       ),
                     ),
@@ -329,9 +333,8 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                       Expanded(
                         child: Text(
                           'Skin Fact #12: Hydrated skin reflects light better, giving you a natural glow!',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
-                            color: Colors.black87,
                             height: 1.4,
                           ),
                         ),
