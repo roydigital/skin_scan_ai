@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import '../../state/scan_provider.dart';
 
 class SmartCameraScreen extends StatefulWidget {
   const SmartCameraScreen({super.key});
@@ -269,7 +271,18 @@ class _SmartCameraScreenState extends State<SmartCameraScreen>
                   ),
                   // Shutter Button
                   GestureDetector(
-                    onTap: () => context.push('/analysis'),
+                    onTap: () async {
+                      try {
+                        if (_cameraController != null && _isPermissionGranted) {
+                          final file = await _cameraController!.takePicture();
+                          context.read<ScanProvider>().setImagePath(file.path);
+                        }
+                        // For simulator/no camera, skip saving path
+                      } catch (e) {
+                        print('Error capturing photo: $e');
+                      }
+                      context.push('/analysis');
+                    },
                     child: Container(
                       width: 80,
                       height: 80,
