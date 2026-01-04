@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:skin_scan_ai/state/scan_provider.dart';
 import 'package:skin_scan_ai/theme.dart';
 
-class SkinProfileScreen extends StatefulWidget {
+class SkinProfileScreen extends StatelessWidget {
   const SkinProfileScreen({super.key});
 
-  @override
-  State<SkinProfileScreen> createState() => _SkinProfileScreenState();
-}
-
-class _SkinProfileScreenState extends State<SkinProfileScreen> {
-  final List<String> selectedConcerns = [];
-  bool noConcerns = false;
-
-  final List<Map<String, dynamic>> concerns = [
+  static const List<Map<String, dynamic>> concerns = [
     {'title': 'Acne & Blemishes', 'icon': Icons.healing},
     {'title': 'Fine Lines & Wrinkles', 'icon': Icons.face},
     {'title': 'Dryness & Flaking', 'icon': Icons.water_drop},
@@ -22,30 +16,11 @@ class _SkinProfileScreenState extends State<SkinProfileScreen> {
     {'title': 'Large Pores', 'icon': Icons.texture},
   ];
 
-  void toggleConcern(String title) {
-    setState(() {
-      if (selectedConcerns.contains(title)) {
-        selectedConcerns.remove(title);
-      } else {
-        selectedConcerns.add(title);
-      }
-      if (noConcerns && selectedConcerns.isNotEmpty) {
-        noConcerns = false;
-      }
-    });
-  }
-
-  void toggleNoConcerns(bool? value) {
-    setState(() {
-      noConcerns = value ?? false;
-      if (noConcerns) {
-        selectedConcerns.clear();
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final scanProvider = context.watch<ScanProvider>();
+    final selectedConcerns = scanProvider.selectedConcerns;
+    final noConcerns = scanProvider.noConcerns;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -144,7 +119,7 @@ class _SkinProfileScreenState extends State<SkinProfileScreen> {
                     final concern = concerns[index];
                     final isSelected = selectedConcerns.contains(concern['title']);
                     return GestureDetector(
-                      onTap: () => toggleConcern(concern['title']),
+                      onTap: () => context.read<ScanProvider>().toggleConcern(concern['title']),
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -220,7 +195,7 @@ class _SkinProfileScreenState extends State<SkinProfileScreen> {
                     children: [
                       Checkbox(
                         value: noConcerns,
-                        onChanged: toggleNoConcerns,
+                        onChanged: (value) => context.read<ScanProvider>().setNoConcerns(value ?? false),
                         activeColor: AppTheme.primaryGreen,
                       ),
                       const Expanded(

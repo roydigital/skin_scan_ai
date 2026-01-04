@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:provider/provider.dart';
+import 'package:skin_scan_ai/state/scan_provider.dart';
 import 'package:skin_scan_ai/theme.dart';
 
 class AnalysisLoadingScreen extends StatefulWidget {
@@ -25,6 +27,49 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
     'Mapping Pores'
   ];
 
+  void _performAnalysis() {
+    final scanProvider = Provider.of<ScanProvider>(context, listen: false);
+    final selectedConcerns = scanProvider.selectedConcerns;
+
+    // Calculate overall score: start at 95, subtract 10 for each concern
+    int overallScore = 95 - (selectedConcerns.length * 10);
+
+    // Determine condition
+    String condition = overallScore > 80 ? 'Excellent' : 'Needs Care';
+
+    // Generate concerns list
+    List<Map<String, dynamic>> concerns = [];
+
+    // Add concerns based on selectedConcerns
+    for (final concern in selectedConcerns) {
+      final randomPercentage = 40 + Random().nextInt(31); // 40-70
+      concerns.add({
+        'name': concern,
+        'percentage': randomPercentage,
+        'level': 'Moderate',
+        'color': Colors.orange,
+      });
+    }
+
+    // Add one "Good" trait for positive feedback
+    concerns.add({
+      'name': 'Texture',
+      'percentage': 15,
+      'level': 'Great',
+      'color': Colors.green,
+    });
+
+    // Create results map
+    final results = {
+      'overallScore': overallScore,
+      'condition': condition,
+      'concerns': concerns,
+    };
+
+    // Save to ScanProvider
+    scanProvider.setAnalysisResults(results);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -43,9 +88,10 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
 
     _progressController.forward();
 
-    // Navigate to results after 4 seconds
+    // Perform analysis and navigate to results after 4 seconds
     _timer = Timer(const Duration(seconds: 4), () {
       if (mounted) {
+        _performAnalysis();
         context.push('/results');
       }
     });
