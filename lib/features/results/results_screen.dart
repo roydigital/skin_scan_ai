@@ -235,7 +235,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                                             '${concern['percentage']}% ${concern['level']}',
                                             style: TextStyle(
                                               fontSize: 14,
-                                              color: concern['color'] as Color,
+                                              color: Color(int.parse((concern['colorHex'] as String).replaceFirst('#', ''), radix: 16)),
                                               fontWeight: FontWeight.w500,
                                             ),
                                           ),
@@ -246,7 +246,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                                         value: (concern['percentage'] as int) / 100,
                                         backgroundColor: Colors.grey.shade200,
                                         valueColor: AlwaysStoppedAnimation<Color>(
-                                          concern['color'] as Color,
+                                          Color(int.parse((concern['colorHex'] as String).replaceFirst('#', ''), radix: 16)),
                                         ),
                                         borderRadius: BorderRadius.circular(4),
                                       ),

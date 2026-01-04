@@ -27,47 +27,9 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
     'Mapping Pores'
   ];
 
-  void _performAnalysis() {
+  Future<void> _performAnalysis() async {
     final scanProvider = Provider.of<ScanProvider>(context, listen: false);
-    final selectedConcerns = scanProvider.selectedConcerns;
-
-    // Calculate overall score: start at 95, subtract 10 for each concern
-    int overallScore = 95 - (selectedConcerns.length * 10);
-
-    // Determine condition
-    String condition = overallScore > 80 ? 'Excellent' : 'Needs Care';
-
-    // Generate concerns list
-    List<Map<String, dynamic>> concerns = [];
-
-    // Add concerns based on selectedConcerns
-    for (final concern in selectedConcerns) {
-      final randomPercentage = 40 + Random().nextInt(31); // 40-70
-      concerns.add({
-        'name': concern,
-        'percentage': randomPercentage,
-        'level': 'Moderate',
-        'color': Colors.orange,
-      });
-    }
-
-    // Add one "Good" trait for positive feedback
-    concerns.add({
-      'name': 'Texture',
-      'percentage': 15,
-      'level': 'Great',
-      'color': Colors.green,
-    });
-
-    // Create results map
-    final results = {
-      'overallScore': overallScore,
-      'condition': condition,
-      'concerns': concerns,
-    };
-
-    // Save to ScanProvider
-    scanProvider.setAnalysisResults(results);
+    await scanProvider.analyzeSkin(); // Uses real AI, fallback to mock if fails
   }
 
   @override
@@ -89,9 +51,9 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
     _progressController.forward();
 
     // Perform analysis and navigate to results after 4 seconds
-    _timer = Timer(const Duration(seconds: 4), () {
+    _timer = Timer(const Duration(seconds: 4), () async {
       if (mounted) {
-        _performAnalysis();
+        await _performAnalysis();
         context.push('/results');
       }
     });

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:skin_scan_ai/state/scan_provider.dart';
 import 'package:skin_scan_ai/theme.dart';
 
 class RoutineScreen extends StatefulWidget {
@@ -392,10 +394,53 @@ class _RoutineScreenState extends State<RoutineScreen> {
           children: [
             _buildNavItem(Icons.face, 'Scan', () => context.push('/camera')),
             _buildNavItem(Icons.spa, 'Routine', null, isActive: true),
-            _buildNavItem(Icons.person, 'Profile', null),
+            _buildNavItem(Icons.person, 'Profile', () => _showDevModeSheet(context)),
           ],
         ),
       ),
+    );
+  }
+
+  void _showDevModeSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Consumer<ScanProvider>(
+          builder: (context, provider, child) {
+            return Container(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Dev Mode',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  SwitchListTile(
+                    title: const Text('Simulate Premium Subscription'),
+                    value: provider.isPremiumMode,
+                    onChanged: (value) {
+                      provider.togglePremiumMode();
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Current AI Model: ${provider.isPremiumMode ? 'Gemini 2.5 Pro' : 'Gemini 2.0 Flash'}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
