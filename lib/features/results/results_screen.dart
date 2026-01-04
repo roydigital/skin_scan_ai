@@ -214,7 +214,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                                 ),
                               ),
                               const SizedBox(height: 16),
-                              ...(provider.analysisResults!['concerns'] as List<Map<String, dynamic>>).map((concern) {
+                              ...List<Map<String, dynamic>>.from(provider.analysisResults!['concerns'] ?? []).map((concern) {
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 16.0),
                                   child: Column(
