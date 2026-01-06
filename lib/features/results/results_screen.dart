@@ -130,20 +130,18 @@ class _ResultsScreenState extends State<ResultsScreen> {
                                     // Heatmap Overlay
                                     if (_showHeatmap)
                                       Positioned.fill(
-                                        child: ShaderMask(
-                                          shaderCallback: (bounds) => RadialGradient(
-                                            center: Alignment(0.2, -0.3),
-                                            radius: 0.8,
-                                            colors: [
-                                              Colors.red.withOpacity(0.4),
-                                              Colors.orange.withOpacity(0.3),
-                                              Colors.transparent,
-                                            ],
-                                            stops: [0.0, 0.5, 1.0],
-                                          ).createShader(bounds),
-                                          blendMode: BlendMode.overlay,
-                                          child: Container(
-                                            color: Colors.white,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            gradient: RadialGradient(
+                                              center: Alignment(0.0, -0.3),
+                                              radius: 0.8,
+                                              colors: [
+                                                Colors.red.withOpacity(0.3),
+                                                Colors.yellow.withOpacity(0.2),
+                                                Colors.transparent,
+                                              ],
+                                              stops: [0.0, 0.5, 1.0],
+                                            ),
                                           ),
                                         ),
                                       ),

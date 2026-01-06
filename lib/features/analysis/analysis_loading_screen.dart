@@ -10,7 +10,9 @@ import 'package:skin_scan_ai/state/scan_provider.dart';
 import 'package:skin_scan_ai/theme.dart';
 
 class AnalysisLoadingScreen extends StatefulWidget {
-  const AnalysisLoadingScreen({super.key});
+  const AnalysisLoadingScreen({super.key, this.imagePath});
+
+  final String? imagePath;
 
   @override
   State<AnalysisLoadingScreen> createState() => _AnalysisLoadingScreenState();
@@ -103,19 +105,11 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                         borderRadius: BorderRadius.circular(16),
                         child: Stack(
                           children: [
-                            // Background Image with Color Filter
+                            // Background Image
                             Positioned.fill(
-                              child: ColorFiltered(
-                                colorFilter: const ColorFilter.matrix([
-                                  0.2126, 0.7152, 0.0722, 0, 0, // Red channel (grayscale)
-                                  0.2126, 0.7152, 0.0722, 0, 0, // Green channel (grayscale)
-                                  0.2126, 0.7152, 0.0722, 0, 0, // Blue channel (grayscale)
-                                  0, 0, 0, 1, 0, // Alpha
-                                ]),
-                                child: scanProvider.capturedImagePath != null
-                                  ? Image.file(File(scanProvider.capturedImagePath!), fit: BoxFit.cover)
-                                  : Image.asset('assets/images/camera_placeholder.png', fit: BoxFit.cover),
-                              ),
+                              child: widget.imagePath != null
+                                ? Image.file(File(widget.imagePath!), fit: BoxFit.cover)
+                                : Image.asset('assets/images/camera_placeholder.png', fit: BoxFit.cover),
                             ),
                             // Green tint overlay
                             Positioned.fill(

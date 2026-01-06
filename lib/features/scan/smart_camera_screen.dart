@@ -44,7 +44,7 @@ class _SmartCameraScreenState extends State<SmartCameraScreen>
         final XFile image = await _cameraController!.takePicture();
         final scanProvider = Provider.of<ScanProvider>(context, listen: false);
         scanProvider.setCapturedImage(image.path);
-        context.push('/analysis');
+        context.push('/analysis', extra: image.path);
       } catch (e) {
         print('Error taking picture: $e');
       }

@@ -60,7 +60,7 @@ final GoRouter _router = GoRouter(
     ),
     GoRoute(
       path: '/analysis',
-      builder: (context, state) => const AnalysisLoadingScreen(),
+      builder: (context, state) => AnalysisLoadingScreen(imagePath: state.extra as String?),
     ),
     GoRoute(
       path: '/results',
