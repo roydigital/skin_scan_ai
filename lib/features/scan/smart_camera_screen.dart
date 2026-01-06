@@ -3,6 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../state/scan_provider.dart';
 
 class SmartCameraScreen extends StatefulWidget {
@@ -17,6 +18,7 @@ class _SmartCameraScreenState extends State<SmartCameraScreen>
   CameraController? _cameraController;
   bool _isCameraInitialized = false;
   bool _isPermissionGranted = false;
+  CameraLensDirection _currentLensDirection = CameraLensDirection.front;
   late AnimationController _pulseController;
 
   @override
@@ -34,6 +36,68 @@ class _SmartCameraScreenState extends State<SmartCameraScreen>
     _cameraController?.dispose();
     _pulseController.dispose();
     super.dispose();
+  }
+
+  Future<void> _takePicture() async {
+    if (_cameraController != null && _isCameraInitialized && !_cameraController!.value.isTakingPicture) {
+      try {
+        final XFile image = await _cameraController!.takePicture();
+        final scanProvider = Provider.of<ScanProvider>(context, listen: false);
+        scanProvider.setCapturedImage(image.path);
+        context.push('/analysis');
+      } catch (e) {
+        print('Error taking picture: $e');
+      }
+    }
+  }
+
+  Future<void> _switchCamera() async {
+    try {
+      final cameras = await availableCameras();
+      if (cameras.isNotEmpty) {
+        // Toggle lens direction
+        _currentLensDirection = _currentLensDirection == CameraLensDirection.front
+            ? CameraLensDirection.back
+            : CameraLensDirection.front;
+
+        // Dispose current controller
+        await _cameraController?.dispose();
+
+        // Find the camera with the new direction
+        final newCamera = cameras.firstWhere(
+          (camera) => camera.lensDirection == _currentLensDirection,
+          orElse: () => cameras.first,
+        );
+
+        // Initialize new controller
+        _cameraController = CameraController(
+          newCamera,
+          ResolutionPreset.high,
+        );
+
+        await _cameraController!.initialize();
+        setState(() {
+          _isCameraInitialized = true;
+        });
+      }
+    } catch (e) {
+      print('Error switching camera: $e');
+    }
+  }
+
+  Future<void> _pickFromGallery() async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+      if (image != null) {
+        final scanProvider = Provider.of<ScanProvider>(context, listen: false);
+        scanProvider.setCapturedImage(image.path);
+        context.push('/analysis');
+      }
+    } catch (e) {
+      print('Error picking image from gallery: $e');
+    }
   }
 
   Future<void> _initializeCamera() async {
@@ -265,24 +329,11 @@ class _SmartCameraScreenState extends State<SmartCameraScreen>
                 children: [
                   IconButton(
                     icon: const Icon(Icons.photo_library, color: Colors.white, size: 32),
-                    onPressed: () {
-                      // TODO: Implement gallery picker
-                    },
+                    onPressed: _pickFromGallery,
                   ),
                   // Shutter Button
                   GestureDetector(
-                    onTap: () async {
-                      try {
-                        if (_cameraController != null && _isPermissionGranted) {
-                          final file = await _cameraController!.takePicture();
-                          context.read<ScanProvider>().setImagePath(file.path);
-                        }
-                        // For simulator/no camera, skip saving path
-                      } catch (e) {
-                        print('Error capturing photo: $e');
-                      }
-                      context.push('/analysis');
-                    },
+                    onTap: () => _takePicture(),
                     child: Container(
                       width: 80,
                       height: 80,
@@ -300,9 +351,7 @@ class _SmartCameraScreenState extends State<SmartCameraScreen>
                   ),
                   IconButton(
                     icon: const Icon(Icons.cameraswitch, color: Colors.white, size: 32),
-                    onPressed: () {
-                      // TODO: Implement camera switch
-                    },
+                    onPressed: _switchCamera,
                   ),
                 ],
               ),

@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:skin_scan_ai/state/scan_provider.dart';
 import 'package:skin_scan_ai/theme.dart';
@@ -21,10 +23,10 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
   double _progress = 0.0;
   int _currentChipIndex = 0;
 
-  final List<String> _statusChips = [
-    'Detecting Wrinkles',
-    'Hydration',
-    'Mapping Pores'
+  final List<Map<String, dynamic>> _statusChips = [
+    {'text': 'Detecting Wrinkles', 'icon': Icons.remove_red_eye},
+    {'text': 'Hydration', 'icon': Icons.water_drop},
+    {'text': 'Mapping Pores', 'icon': Icons.grid_on},
   ];
 
   Future<void> _performAnalysis() async {
@@ -68,6 +70,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
 
   @override
   Widget build(BuildContext context) {
+    final scanProvider = Provider.of<ScanProvider>(context);
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -109,10 +112,9 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                                   0.2126, 0.7152, 0.0722, 0, 0, // Blue channel (grayscale)
                                   0, 0, 0, 1, 0, // Alpha
                                 ]),
-                                child: Image.asset(
-                                  'assets/images/camera_placeholder.png',
-                                  fit: BoxFit.cover,
-                                ),
+                                child: scanProvider.capturedImagePath != null
+                                  ? Image.file(File(scanProvider.capturedImagePath!), fit: BoxFit.cover)
+                                  : Image.asset('assets/images/camera_placeholder.png', fit: BoxFit.cover),
                               ),
                             ),
                             // Green tint overlay
@@ -153,6 +155,99 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                                     },
                                   );
                                 },
+                              ),
+                            ),
+                            // REC Badge
+                            Positioned(
+                              top: 16,
+                              left: 16,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.6),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  'REC 00:04',
+                                  style: GoogleFonts.spaceMono(
+                                    fontSize: 12,
+                                    color: AppTheme.primaryGreen,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            // Viewfinder Corners
+                            Positioned(
+                              top: 20,
+                              left: 20,
+                              child: Container(
+                                width: 30,
+                                height: 30,
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    top: BorderSide(color: AppTheme.primaryGreen, width: 3),
+                                    left: BorderSide(color: AppTheme.primaryGreen, width: 3),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              top: 20,
+                              right: 20,
+                              child: Container(
+                                width: 30,
+                                height: 30,
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    top: BorderSide(color: AppTheme.primaryGreen, width: 3),
+                                    right: BorderSide(color: AppTheme.primaryGreen, width: 3),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 20,
+                              left: 20,
+                              child: Container(
+                                width: 30,
+                                height: 30,
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(color: AppTheme.primaryGreen, width: 3),
+                                    left: BorderSide(color: AppTheme.primaryGreen, width: 3),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 20,
+                              right: 20,
+                              child: Container(
+                                width: 30,
+                                height: 30,
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(color: AppTheme.primaryGreen, width: 3),
+                                    right: BorderSide(color: AppTheme.primaryGreen, width: 3),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            // Face Guide
+                            Positioned.fill(
+                              child: Center(
+                                child: Container(
+                                  width: 150,
+                                  height: 200,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.white.withOpacity(0.5),
+                                      width: 2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(75),
+                                  ),
+                                ),
                               ),
                             ),
                             // Mapping Points
@@ -223,12 +318,25 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
               // Progress Section
               Column(
                 children: [
-                  Text(
-                    'Processing 3D Mesh... ${(100 * _progress).toInt()}%',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Processing 3D Mesh...',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        '${(100 * _progress).toInt()}%',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          color: AppTheme.primaryGreen,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
                   // Progress Bar
@@ -267,8 +375,8 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                               decoration: BoxDecoration(
                                 color: index <= _currentChipIndex
-                                    ? AppTheme.primaryGreen.withOpacity(0.1)
-                                    : Colors.grey[200],
+                                    ? const Color(0xFFE7F3EC)
+                                    : Colors.white,
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
                                   color: index <= _currentChipIndex
@@ -277,15 +385,27 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                                   width: 1,
                                 ),
                               ),
-                              child: Text(
-                                _statusChips[index],
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: index <= _currentChipIndex
-                                      ? AppTheme.primaryGreen
-                                      : Colors.grey[600],
-                                  fontWeight: FontWeight.w500,
-                                ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    _statusChips[index]['icon'],
+                                    size: 16,
+                                    color: index <= _currentChipIndex
+                                        ? AppTheme.primaryGreen
+                                        : Colors.grey[600],
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    _statusChips[index]['text'],
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: index <= _currentChipIndex
+                                          ? Colors.black
+                                          : Colors.grey[600],
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ).animate(
                               effects: index <= _currentChipIndex
@@ -307,41 +427,64 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
               const SizedBox(height: 40),
               // Fun Fact Card
               Card(
-                elevation: 4,
+                elevation: 8,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(24),
                 ),
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    gradient: LinearGradient(
+                    borderRadius: BorderRadius.circular(24),
+                    gradient: const LinearGradient(
                       colors: [
-                        AppTheme.primaryGreen.withOpacity(0.1),
-                        AppTheme.primaryGreen.withOpacity(0.05),
+                        Colors.black,
+                        Color(0xFF003300), // Dark green
                       ],
                     ),
                   ),
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        Icons.lightbulb,
-                        color: AppTheme.primaryGreen,
-                        size: 24,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'Skin Fact #12: Hydrated skin reflects light better, giving you a natural glow!',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            height: 1.4,
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.lightbulb,
+                            color: AppTheme.primaryGreen,
+                            size: 24,
                           ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'SKIN FACT #12',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.primaryGreen,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Hydrated skin reflects light better, making you look naturally glowing...',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          height: 1.4,
+                          color: Colors.white,
                         ),
                       ),
                     ],
                   ),
                 ),
+              ),
+              const SizedBox(height: 20),
+              // Footer
+              Text(
+                'Please do not close the app.',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[600],
+                ),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
             ],

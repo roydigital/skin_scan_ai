@@ -44,7 +44,7 @@ class ScanProvider extends ChangeNotifier {
 
   String? get capturedImagePath => _capturedImagePath;
 
-  void setImagePath(String path) {
+  void setCapturedImage(String path) {
     _capturedImagePath = path;
     notifyListeners();
   }

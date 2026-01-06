@@ -24,15 +24,21 @@ class _ResultsScreenState extends State<ResultsScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Top Bar
+            // Header
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodyLarge?.color),
-                    onPressed: () => context.pop(),
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Theme.of(context).cardColor.withOpacity(0.1),
+                    ),
+                    child: IconButton(
+                      icon: Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodyLarge?.color),
+                      onPressed: () => context.pop(),
+                    ),
                   ),
                   Text(
                     'Scan Results',
@@ -42,11 +48,17 @@ class _ResultsScreenState extends State<ResultsScreen> {
                       color: Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                   ),
-                  IconButton(
-                    icon: Icon(Icons.share, color: Theme.of(context).textTheme.bodyLarge?.color),
-                    onPressed: () {
-                      // TODO: Implement share functionality
-                    },
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Theme.of(context).cardColor.withOpacity(0.1),
+                    ),
+                    child: IconButton(
+                      icon: Icon(Icons.share, color: Theme.of(context).textTheme.bodyLarge?.color),
+                      onPressed: () {
+                        // TODO: Implement share functionality
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -61,101 +73,154 @@ class _ResultsScreenState extends State<ResultsScreen> {
                         // Hero Image Section
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Stack(
-                            children: [
-                              AspectRatio(
-                                aspectRatio: 3 / 4,
-                                child: Card(
-                                  elevation: 8,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: Stack(
-                                      children: [
-                                        // Base Image
-                                        Positioned.fill(
-                                          child: provider.capturedImagePath != null
-                                            ? Image.file(
-                                                File(provider.capturedImagePath!),
-                                                fit: BoxFit.cover,
-                                              )
-                                            : Image.asset(
-                                                'assets/images/camera_placeholder.png',
-                                                fit: BoxFit.cover,
-                                              ),
+                          child: AspectRatio(
+                            aspectRatio: 4 / 5,
+                            child: Card(
+                              elevation: 8,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(24),
+                                child: Stack(
+                                  children: [
+                                    // Base Image
+                                    Positioned.fill(
+                                      child: provider.capturedImagePath != null
+                                        ? Image.file(
+                                            File(provider.capturedImagePath!),
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Image.asset(
+                                            'assets/images/camera_placeholder.png',
+                                            fit: BoxFit.cover,
+                                          ),
+                                    ),
+                                    // Analysis Complete Badge
+                                    Positioned(
+                                      top: 16,
+                                      right: 16,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black.withOpacity(0.7),
+                                          borderRadius: BorderRadius.circular(20),
                                         ),
-                                        // Heatmap Overlay
-                                        if (_showHeatmap)
-                                          Positioned.fill(
-                                            child: Container(
-                                              decoration: const BoxDecoration(
-                                                gradient: RadialGradient(
-                                                  center: Alignment.center,
-                                                  radius: 0.8,
-                                                  colors: [
-                                                    Colors.red,
-                                                    Colors.orange,
-                                                    Colors.yellow,
-                                                    Colors.green,
-                                                  ],
-                                                  stops: [0.0, 0.3, 0.6, 1.0],
-                                                ),
-                                              ),
-                                              child: Container(
-                                                color: Colors.white.withOpacity(0.7),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Icons.check_circle,
+                                              color: AppTheme.primaryGreen,
+                                              size: 16,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              'Analysis Complete',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w500,
                                               ),
                                             ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    // Heatmap Overlay
+                                    if (_showHeatmap)
+                                      Positioned.fill(
+                                        child: ShaderMask(
+                                          shaderCallback: (bounds) => RadialGradient(
+                                            center: Alignment(0.2, -0.3),
+                                            radius: 0.8,
+                                            colors: [
+                                              Colors.red.withOpacity(0.4),
+                                              Colors.orange.withOpacity(0.3),
+                                              Colors.transparent,
+                                            ],
+                                            stops: [0.0, 0.5, 1.0],
+                                          ).createShader(bounds),
+                                          blendMode: BlendMode.overlay,
+                                          child: Container(
+                                            color: Colors.white,
                                           ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Heatmap Toggle Card
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Card(
+                            elevation: 4,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.primaryGreen.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Icon(
+                                      Icons.heat_pump, // Using heat_pump as heatmap icon
+                                      color: AppTheme.primaryGreen,
+                                      size: 24,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Heatmap Overlay',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            color: Theme.of(context).textTheme.bodyLarge?.color,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Identify problem areas',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.7),
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   ),
-                                ),
-                              ),
-                              // Heatmap Toggle
-                              Positioned(
-                                bottom: 16,
-                                right: 16,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).cardColor.withOpacity(0.9),
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(color: Colors.grey.shade300),
+                                  Switch(
+                                    value: _showHeatmap,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _showHeatmap = value;
+                                      });
+                                    },
+                                    activeColor: AppTheme.primaryGreen,
                                   ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        'Heatmap',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                          color: Theme.of(context).textTheme.bodyLarge?.color,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Switch(
-                                        value: _showHeatmap,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _showHeatmap = value;
-                                          });
-                                        },
-                                        activeColor: AppTheme.primaryGreen,
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
                         ),
 
                         const SizedBox(height: 32),
 
-                        // Overall Score Section
+                        // Score Section
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: Card(
@@ -171,13 +236,25 @@ class _ResultsScreenState extends State<ResultsScreen> {
                                     radius: 80.0,
                                     lineWidth: 12.0,
                                     percent: (provider.analysisResults!['overallScore'] as int) / 100,
-                                    center: Text(
-                                      '${provider.analysisResults!['overallScore']}',
-                                      style: TextStyle(
-                                        fontSize: 32,
-                                        fontWeight: FontWeight.bold,
-                                        color: Theme.of(context).textTheme.bodyLarge?.color,
-                                      ),
+                                    center: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          '${provider.analysisResults!['overallScore']}',
+                                          style: TextStyle(
+                                            fontSize: 32,
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme.of(context).textTheme.bodyLarge?.color,
+                                          ),
+                                        ),
+                                        Text(
+                                          'out of 100',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.7),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                     progressColor: AppTheme.primaryGreen,
                                     backgroundColor: Colors.grey.shade200,
@@ -187,10 +264,19 @@ class _ResultsScreenState extends State<ResultsScreen> {
                                   Text(
                                     provider.analysisResults!['condition'] as String,
                                     style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
                                       color: Theme.of(context).textTheme.bodyLarge?.color,
                                     ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Your skin barrier is strong. Minor attention needed for hydration.',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.7),
+                                    ),
+                                    textAlign: TextAlign.center,
                                   ),
                                 ],
                               ),
@@ -200,58 +286,149 @@ class _ResultsScreenState extends State<ResultsScreen> {
 
                         const SizedBox(height: 32),
 
-                        // Concern Breakdown
+                        // Concern Breakdown List
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Concern Breakdown',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                  color: Theme.of(context).textTheme.bodyLarge?.color,
-                                ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Concern Breakdown',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600,
+                                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      // TODO: Navigate to history screen
+                                    },
+                                    child: Text(
+                                      'View History',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppTheme.primaryGreen,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 16),
                               ...List<Map<String, dynamic>>.from(provider.analysisResults!['concerns'] ?? []).map((concern) {
+                                // Get icon based on concern name
+                                IconData getIcon(String name) {
+                                  switch (name) {
+                                    case 'Acne & Blemishes':
+                                      return Icons.healing;
+                                    case 'Fine Lines & Wrinkles':
+                                      return Icons.face;
+                                    case 'Dryness & Flaking':
+                                      return Icons.water_drop;
+                                    case 'Oily Skin':
+                                      return Icons.wb_sunny;
+                                    case 'Redness & Irritation':
+                                      return Icons.local_fire_department;
+                                    case 'Large Pores':
+                                    case 'Texture':
+                                      return Icons.texture;
+                                    default:
+                                      return Icons.help_outline;
+                                  }
+                                }
+
+                                // Get severity color
+                                Color getSeverityColor(String level) {
+                                  switch (level.toLowerCase()) {
+                                    case 'low':
+                                    case 'good':
+                                      return AppTheme.primaryGreen;
+                                    case 'moderate':
+                                      return Colors.orange;
+                                    case 'high':
+                                      return Colors.red;
+                                    default:
+                                      return Colors.grey;
+                                  }
+                                }
+
                                 return Padding(
-                                  padding: const EdgeInsets.only(bottom: 16.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  padding: const EdgeInsets.only(bottom: 12.0),
+                                  child: Card(
+                                    elevation: 2,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
                                         children: [
-                                          Text(
-                                            concern['name'] as String,
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Theme.of(context).textTheme.bodyLarge?.color,
-                                            ),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                getIcon(concern['name'] as String),
+                                                size: 24,
+                                                color: Theme.of(context).textTheme.bodyLarge?.color,
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                child: Text(
+                                                  concern['name'] as String,
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Theme.of(context).textTheme.bodyLarge?.color,
+                                                  ),
+                                                ),
+                                              ),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                decoration: BoxDecoration(
+                                                  color: getSeverityColor(concern['level'] as String).withOpacity(0.1),
+                                                  borderRadius: BorderRadius.circular(12),
+                                                ),
+                                                child: Text(
+                                                  concern['level'] as String,
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: getSeverityColor(concern['level'] as String),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          Text(
-                                            '${concern['percentage']}% ${concern['level']}',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color: Color(int.parse((concern['colorHex'] as String).replaceFirst('#', ''), radix: 16)),
-                                              fontWeight: FontWeight.w500,
-                                            ),
+                                          const SizedBox(height: 12),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: LinearProgressIndicator(
+                                                  value: (concern['percentage'] as int) / 100,
+                                                  backgroundColor: Colors.grey.shade200,
+                                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                                    getSeverityColor(concern['level'] as String),
+                                                  ),
+                                                  borderRadius: BorderRadius.circular(4),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Text(
+                                                '${concern['percentage']}%',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
-                                      const SizedBox(height: 8),
-                                      LinearProgressIndicator(
-                                        value: (concern['percentage'] as int) / 100,
-                                        backgroundColor: Colors.grey.shade200,
-                                        valueColor: AlwaysStoppedAnimation<Color>(
-                                          Color(int.parse((concern['colorHex'] as String).replaceFirst('#', ''), radix: 16)),
-                                        ),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 );
                               }),
@@ -311,46 +488,63 @@ class _ResultsScreenState extends State<ResultsScreen> {
         ),
       ),
 
-      // Sticky Footer
+      // Footer
       bottomNavigationBar: SafeArea(
         bottom: true,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 8,
-                offset: const Offset(0, -2),
-              ),
-            ],
-          ),
-          child: ElevatedButton(
-            onPressed: () => context.push('/routine'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryGreen,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              elevation: 0,
-            ),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Build My Routine',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
+          height: 80, // Space for gradient fade
+          child: Stack(
+            children: [
+              // Gradient fade background
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
+                        Theme.of(context).scaffoldBackgroundColor,
+                      ],
+                    ),
                   ),
                 ),
-                SizedBox(width: 8),
-                Icon(Icons.arrow_forward, size: 20),
-              ],
-            ),
+              ),
+              // Button
+              Positioned(
+                bottom: 16,
+                left: 20,
+                right: 20,
+                child: SizedBox(
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: () => context.push('/routine'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primaryGreen,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16), // rounded-2xl
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Build My Routine',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Icon(Icons.arrow_forward, size: 20),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
