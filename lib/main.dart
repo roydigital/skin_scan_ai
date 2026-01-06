@@ -15,16 +15,20 @@ import 'package:skin_scan_ai/features/routine/routine_screen.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: ".env");
-  runApp(const MyApp());
+  final scanProvider = ScanProvider();
+  await scanProvider.loadState();
+  runApp(MyApp(scanProvider: scanProvider));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final ScanProvider scanProvider;
+
+  const MyApp({super.key, required this.scanProvider});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<ScanProvider>(
-      create: (context) => ScanProvider(),
+    return ChangeNotifierProvider<ScanProvider>.value(
+      value: scanProvider,
       child: MaterialApp.router(
         title: 'Skin Scan AI',
         theme: AppTheme.lightTheme,

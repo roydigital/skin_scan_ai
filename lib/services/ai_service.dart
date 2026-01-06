@@ -1,14 +1,18 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 class SkinAnalysisService {
-  static const String _apiKey = 'AIzaSyA3X86Re1-jmij7yqWziVjB0YSUMUghk2Y'; // Placeholder
-
   Future<Map<String, dynamic>> analyzeSkin(String imagePath, {bool isPremium = false}) async {
     try {
+      final apiKey = dotenv.env['GEMINI_API_KEY'];
+      if (apiKey == null) {
+        throw Exception('GEMINI_API_KEY not found in .env file');
+      }
+
       final modelName = isPremium ? 'gemini-2.5-pro' : 'gemini-2.0-flash';
-      final model = GenerativeModel(model: modelName, apiKey: _apiKey);
+      final model = GenerativeModel(model: modelName, apiKey: apiKey);
 
       final imageBytes = await File(imagePath).readAsBytes();
       final imagePart = DataPart('image/jpeg', imageBytes);

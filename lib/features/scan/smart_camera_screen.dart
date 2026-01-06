@@ -14,7 +14,7 @@ class SmartCameraScreen extends StatefulWidget {
 }
 
 class _SmartCameraScreenState extends State<SmartCameraScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   CameraController? _cameraController;
   bool _isCameraInitialized = false;
   bool _isPermissionGranted = false;
@@ -24,6 +24,7 @@ class _SmartCameraScreenState extends State<SmartCameraScreen>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _pulseController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -33,6 +34,7 @@ class _SmartCameraScreenState extends State<SmartCameraScreen>
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _cameraController?.dispose();
     _pulseController.dispose();
     super.dispose();
@@ -100,6 +102,16 @@ class _SmartCameraScreenState extends State<SmartCameraScreen>
     }
   }
 
+  Future<void> _disposeCamera() async {
+    if (_cameraController != null) {
+      await _cameraController!.dispose();
+      _cameraController = null;
+    }
+    setState(() {
+      _isCameraInitialized = false;
+    });
+  }
+
   Future<void> _initializeCamera() async {
     try {
       // Request camera permission
@@ -119,6 +131,7 @@ class _SmartCameraScreenState extends State<SmartCameraScreen>
           );
 
           await _cameraController!.initialize();
+          if (!mounted) return;
           setState(() {
             _isCameraInitialized = true;
           });
@@ -132,6 +145,15 @@ class _SmartCameraScreenState extends State<SmartCameraScreen>
       setState(() {
         _isPermissionGranted = false;
       });
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.inactive) {
+      _disposeCamera();
+    } else if (state == AppLifecycleState.resumed) {
+      _initializeCamera();
     }
   }
 
